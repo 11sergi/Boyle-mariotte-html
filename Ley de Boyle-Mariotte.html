@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ley de Boyle-Mariotte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f4;--panel:#fff;--ink:#14263b;--mute:#586b7d;--line:#cfd9e0;--gas:#0e8f8a;--sig:#e8a800;--ok:#1b7f45;--bad:#b3261e;--cyl:#dde6ec;--pist:#14263b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1822;--panel:#16232f;--ink:#e6eef4;--mute:#92a5b5;--line:#2a3b4a;--gas:#3fd0c9;--sig:#f2b705;--ok:#58c885;--bad:#ff8a80;--cyl:#1d2e3b;--pist:#e6eef4}}
+:root[data-theme="dark"]{--bg:#0e1822;--panel:#16232f;--ink:#e6eef4;--mute:#92a5b5;--line:#2a3b4a;--gas:#3fd0c9;--sig:#f2b705;--ok:#58c885;--bad:#ff8a80;--cyl:#1d2e3b;--pist:#e6eef4}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 'IBM Plex Sans',system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1,h2{font-family:'Bricolage Grotesque','Arial Narrow',system-ui,sans-serif;line-height:1.1;margin:0}
+h1{font-size:clamp(32px,8vw,52px);font-weight:800;letter-spacing:-.02em}
+h2{font-size:22px;font-weight:600;margin:36px 0 10px}
+.lead{color:var(--mute);margin:10px 0 18px;max-width:60ch}
+.eq{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(28px,7vw,40px);letter-spacing:.01em}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+canvas{display:block;width:100%;height:190px;border-radius:6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.stat{flex:1 1 90px;border-left:3px solid var(--sig);padding-left:10px}
+.stat b{display:block;font:800 26px/1.1 'Bricolage Grotesque',sans-serif}
+.stat span{color:var(--mute);font-size:13px}
+input[type=range]{width:100%;accent-color:var(--gas);height:36px;margin:8px 0 0}
+label{font-weight:500}
+button{font:500 15px 'IBM Plex Sans',sans-serif;background:var(--ink);color:var(--bg);border:0;border-radius:6px;padding:10px 14px;cursor:pointer}
+button.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:500;color:var(--mute);font-size:14px}
+svg text{fill:var(--mute);font:12px 'IBM Plex Sans',sans-serif}
+p{margin:8px 0}
+input[type=number]{font:inherit;width:90px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.by{color:var(--mute);font-size:14px;margin:6px 0 0}
+</style>
+</head>
+<body>
+<main>
+<h1>Ley de Boyle-Mariotte</h1>
+<p class="by">Hecho por s.escursell</p>
+<p class="lead">Si comprimes un gas sin cambiar su temperatura, su presión sube. Compruébalo moviendo el émbolo.</p>
+<div class="eq">P · V = constante</div>
+
+<h2>Simulación</h2>
+<div class="card">
+  <canvas id="cv" aria-label="Cilindro con partículas de gas y émbolo"></canvas>
+  <label for="vol">Volumen: <span id="vlab">10.0</span> L</label>
+  <input id="vol" type="range" min="1" max="10" step="0.1" value="10">
+  <div class="row">
+    <div class="stat"><b id="p">1.0</b><span>presión (atm)</span></div>
+    <div class="stat"><b id="v">10.0</b><span>volumen (L)</span></div>
+    <div class="stat"><b id="pv">10.0</b><span>P · V (atm·L)</span></div>
+    <div class="stat"><b id="hits">0</b><span>choques/s en el émbolo</span></div>
+  </div>
+  <div class="row"><button id="rec">Anotar medida</button><button class="alt" id="clr">Borrar medidas</button></div>
+</div>
+
+<h2>Qué ocurre</h2>
+<p>La cantidad de gas (30 partículas) y la temperatura (la velocidad de las partículas) no cambian. Al reducir el volumen, las partículas recorren menos distancia entre choques, golpean el émbolo más veces por segundo y la presión sube.</p>
+
+<div class="grid">
+  <div class="card">
+    <strong>Gráfica P–V</strong>
+    <svg id="ch" viewBox="0 0 320 230" width="100%" role="img" aria-label="Gráfica presión frente a volumen: una hipérbola"></svg>
+  </div>
+  <div class="card scroll">
+    <strong>Tus medidas</strong>
+    <table><thead><tr><th>V (L)</th><th>P (atm)</th><th>P·V</th></tr></thead><tbody id="tb"><tr><td colspan="3" style="text-align:left;color:var(--mute)">Mueve el émbolo y pulsa «Anotar medida».</td></tr></tbody></table>
+  </div>
+</div>
+
+<h2>Para calcular</h2>
+<p>Con la temperatura constante, entre dos estados: <b>P₁ · V₁ = P₂ · V₂</b></p>
+<p>Despeja: P₂ = P₁ · V₁ / V₂. Aplicación típica: aire comprimido en neumática, donde el cilindro y el compresor siguen esta relación.</p>
+
+
+<h2>Condiciones</h2>
+<p>Solo vale con temperatura y cantidad de gas constantes, y con gases a presiones moderadas. Si calientas el gas o añades más, ya no se cumple y hace falta la ecuación de los gases ideales: P·V = n·R·T.</p>
+</main>
+
+<script>
+const K=10, N=30, VMAX=10;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const vol=document.getElementById('vol');
+let W=0,H=0,dpr=1;
+function resize(){dpr=window.devicePixelRatio||1;W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',resize);resize();
+const L=10, R=()=>W-30; // cylinder inner x range
+const px=()=>L+(parseFloat(vol.value)/VMAX)*(R()-L);
+const parts=Array.from({length:N},()=>{const a=Math.random()*6.283;return{x:Math.random()*100+15,y:Math.random()*150+20,vx:Math.cos(a)*110,vy:Math.sin(a)*110}});
+let hitCount=0, hitShown=0, tAcc=0, last=performance.now();
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function step(now){
+  const dt=Math.min((now-last)/1000,.05);last=now;
+  const pr=px(), top=10, bot=H-10;
+  for(const p of parts){
+    p.x+=p.vx*dt;p.y+=p.vy*dt;
+    if(p.x<L+4){p.x=L+4;p.vx=Math.abs(p.vx)}
+    if(p.x>pr-4){p.x=pr-4;p.vx=-Math.abs(p.vx);hitCount++}
+    if(p.y<top+4){p.y=top+4;p.vy=Math.abs(p.vy)}
+    if(p.y>bot-4){p.y=bot-4;p.vy=-Math.abs(p.vy)}
+  }
+  tAcc+=dt;if(tAcc>=1){hitShown=hitCount;hitCount=0;tAcc=0;document.getElementById('hits').textContent=hitShown}
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=css('--cyl');ctx.fillRect(L,10,pr-L,H-20);
+  ctx.strokeStyle=css('--mute');ctx.lineWidth=3;ctx.strokeRect(L,10,R()-L+14,H-20);
+  ctx.fillStyle=css('--gas');
+  for(const p of parts){ctx.beginPath();ctx.arc(p.x,p.y,4,0,6.283);ctx.fill()}
+  ctx.fillStyle=css('--pist');ctx.fillRect(pr,4,8,H-8);ctx.fillRect(pr+8,H/2-4,W-pr-8,8);
+  requestAnimationFrame(step)
+}
+requestAnimationFrame(step);
+
+const f1=x=>x.toFixed(1);
+const ch=document.getElementById('ch');
+const cx=v=>40+v/10*260, cy=p=>195-p/10*180;
+let rec=[];
+function chart(){
+  let s='';
+  for(let i=0;i<=10;i+=2){s+=`<line x1="${cx(i)}" x2="${cx(i)}" y1="15" y2="195" stroke="${css('--line')}"/><line x1="40" x2="300" y1="${cy(i)}" y2="${cy(i)}" stroke="${css('--line')}"/><text x="${cx(i)}" y="210" text-anchor="middle">${i}</text><text x="34" y="${cy(i)+4}" text-anchor="end">${i}</text>`}
+  s+=`<text x="170" y="225" text-anchor="middle">V (L)</text><text x="4" y="10">P (atm)</text>`;
+  let d='';for(let v=1;v<=10.01;v+=.25)d+=(d?'L':'M')+cx(v)+' '+cy(K/v);
+  s+=`<path d="${d}" fill="none" stroke="${css('--gas')}" stroke-width="2.5"/>`;
+  for(const r of rec)s+=`<circle cx="${cx(r.v)}" cy="${cy(r.p)}" r="4" fill="${css('--ink')}"/>`;
+  const v=parseFloat(vol.value);
+  s+=`<circle cx="${cx(v)}" cy="${cy(K/v)}" r="7" fill="${css('--sig')}" stroke="${css('--ink')}" stroke-width="2"/>`;
+  ch.innerHTML=s;
+}
+function update(){
+  const v=parseFloat(vol.value), p=K/v;
+  document.getElementById('vlab').textContent=f1(v);
+  document.getElementById('v').textContent=f1(v);
+  document.getElementById('p').textContent=p.toFixed(2);
+  document.getElementById('pv').textContent=f1(v*p);
+  chart();
+}
+vol.addEventListener('input',update);update();
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',update);
+function table(){
+  const tb=document.getElementById('tb');
+  tb.innerHTML=rec.length?rec.map(r=>`<tr><td>${f1(r.v)}</td><td>${r.p.toFixed(2)}</td><td>${f1(r.v*r.p)}</td></tr>`).join(''):'<tr><td colspan="3" style="text-align:left;color:var(--mute)">Mueve el émbolo y pulsa «Anotar medida».</td></tr>';
+}
+document.getElementById('rec').onclick=()=>{const v=parseFloat(vol.value);rec.push({v,p:K/v});if(rec.length>8)rec.shift();table();chart()};
+document.getElementById('clr').onclick=()=>{rec=[];table();chart()};
+
+</script>
+</body>
+</html>
