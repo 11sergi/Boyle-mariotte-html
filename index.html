@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#eef2f4;--panel:#fff;--ink:#14263b;--mute:#586b7d;--line:#cfd9e0;--gas:#0e8f8a;--sig:#e8a800;--ok:#1b7f45;--bad:#b3261e;--cyl:#dde6ec;--pist:#14263b;
+:root{--bg:#eef2f4;--panel:#fff;--ink:#14263b;--mute:#586b7d;--line:#cfd9e0;--gas:#0e8f8a;--sig:#e8a800;--ok:#1b7f45;--bad:#b3261e;--cyl:#dde6ec;--pist:#14263b;--red:#c62828;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1822;--panel:#16232f;--ink:#e6eef4;--mute:#92a5b5;--line:#2a3b4a;--gas:#3fd0c9;--sig:#f2b705;--ok:#58c885;--bad:#ff8a80;--cyl:#1d2e3b;--pist:#e6eef4}}
-:root[data-theme="dark"]{--bg:#0e1822;--panel:#16232f;--ink:#e6eef4;--mute:#92a5b5;--line:#2a3b4a;--gas:#3fd0c9;--sig:#f2b705;--ok:#58c885;--bad:#ff8a80;--cyl:#1d2e3b;--pist:#e6eef4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1822;--panel:#16232f;--ink:#e6eef4;--mute:#92a5b5;--line:#2a3b4a;--gas:#3fd0c9;--sig:#f2b705;--ok:#58c885;--bad:#ff8a80;--cyl:#1d2e3b;--pist:#e6eef4;--red:#ff6b6b}}
+:root[data-theme="dark"]{--bg:#0e1822;--panel:#16232f;--ink:#e6eef4;--mute:#92a5b5;--line:#2a3b4a;--gas:#3fd0c9;--sig:#f2b705;--ok:#58c885;--bad:#ff8a80;--cyl:#1d2e3b;--pist:#e6eef4;--red:#ff6b6b}
 *{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 'IBM Plex Sans',system-ui,sans-serif}
@@ -48,13 +48,13 @@ th{font-weight:500;color:var(--mute);font-size:14px}
 svg text{fill:var(--mute);font:12px 'IBM Plex Sans',sans-serif}
 p{margin:8px 0}
 input[type=number]{font:inherit;width:90px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
-.by{color:var(--mute);font-size:14px;margin:6px 0 0}
+.by{color:var(--red);font-size:15px;font-weight:500;margin:0 0 8px}
 </style>
 </head>
 <body>
 <main>
+<p class="by">Sergi Escursell</p>
 <h1>Ley de Boyle-Mariotte</h1>
-<p class="by">Sergi Escursell Dominguez</p>
 <p class="lead">Si comprimes un gas sin cambiar su temperatura, su presión sube. Compruébalo moviendo el émbolo.</p>
 <div class="eq">P · V = constante</div>
 
