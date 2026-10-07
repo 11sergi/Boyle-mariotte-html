@@ -83,7 +83,6 @@ input[type=number]{font:inherit;width:90px;padding:8px;border:1px solid var(--li
 <p>Con la temperatura constante, entre dos estados: <b>P₁ · V₁ = P₂ · V₂</b></p>
 <p>Despeja: P₂ = P₁ · V₁ / V₂. Aplicación típica: aire comprimido en neumática, donde el cilindro y el compresor siguen esta relación.</p>
 
-
 <h2>Condiciones</h2>
 <p>Solo vale con temperatura y cantidad de gas constantes, y con gases a presiones moderadas. Si calientas el gas o añades más, ya no se cumple y hace falta la ecuación de los gases ideales: P·V = n·R·T.</p>
 </main>
@@ -152,7 +151,6 @@ function table(){
 }
 document.getElementById('rec').onclick=()=>{const v=parseFloat(vol.value);rec.push({v,p:K/v});if(rec.length>8)rec.shift();table();chart()};
 document.getElementById('clr').onclick=()=>{rec=[];table();chart()};
-
 </script>
 </body>
 </html>
